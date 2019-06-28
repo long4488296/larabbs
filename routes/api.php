@@ -52,14 +52,12 @@ $api->version('v1', [
         // 登录token
         $api->post('authorizations', 'AuthorizationsController@store')
             ->name('api.authorizations.store');
-        $api->get('authorizations', 'AuthorizationsController@store')
-            ->name('api.authorizations.store');
-        
+        // 刷新token
+        $api->put('authorizations/current', 'AuthorizationsController@update')
+        ->name('api.authorizations.update');
         // 需要 token 验证的接口
         $api->group(['middleware' => 'api.auth'], function($api) {
-            // 刷新token
-            $api->put('authorizations/current', 'AuthorizationsController@update')
-                ->name('api.authorizations.update');
+            
             // 删除token
             $api->delete('authorizations/current', 'AuthorizationsController@destroy')
                 ->name('api.authorizations.destroy');

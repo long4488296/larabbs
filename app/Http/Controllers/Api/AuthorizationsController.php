@@ -6,7 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\AuthorizationRequest;
 
-
+use Psr\Http\Message\ServerRequestInterface;
+use League\OAuth2\Server\AuthorizationServer;
+use Zend\Diactoros\Response as Psr7Response;
+use League\OAuth2\Server\Exception\OAuthServerException;
 
 
 class AuthorizationsController extends Controller
@@ -19,30 +22,30 @@ class AuthorizationsController extends Controller
             'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
         ]);
     }
-    public function store(AuthorizationRequest $request)
+    public function store(AuthorizationRequest $originRequest, AuthorizationServer $server, ServerRequestInterface $serverRequest)
     {
-        $username = $request->username;
-        filter_var($username, FILTER_VALIDATE_EMAIL) ?
-            $credentials['email'] = $username :
-            $credentials['phone'] = $username;
-
-        $credentials['password'] = $request->password;
-
-        if (!$token = \Auth::guard('api')->attempt($credentials)) {
-            return $this->response->errorUnauthorized('用户名或密码错误');
-        }
-
-         return $this->respondWithToken($token);
+        try {
+            return $server->respondToAccessTokenRequest($serverRequest, new Psr7Response)->withStatus(201);
+         } catch(OAuthServerException $e) {
+             return $this->response->errorUnauthorized($e->getMessage());
+         }
     }
-    public function update()
+    public function update(AuthorizationServer $server, ServerRequestInterface $serverRequest)
     {
-        $token = \Auth::guard('api')->refresh();
-        return $this->respondWithToken($token);
+        try {
+            return $server->respondToAccessTokenRequest($serverRequest, new Psr7Response);
+         } catch(OAuthServerException $e) {
+             return $this->response->errorUnauthorized($e->getMessage());
+         }
     }
 
     public function destroy()
     {
-        \Auth::guard('api')->logout();
-        return $this->response->noContent();
+        if (!empty($this->user())) {
+            $this->user()->token()->revoke();
+            return $this->response->noContent();
+        } else {
+            return $this->response->errorUnauthorized('The token is invalid.');
+        }
     }
 }
