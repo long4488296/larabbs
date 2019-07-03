@@ -1,6 +1,11 @@
 <?php
 
 Route::get('/', 'TopicsController@index')->name('root');
+Route::get('/verificationCodes', 'TopicsController@index')->name('a1');
+//修改首页
+// Route::get('/', function () {
+//     return redirect()->away('https://skbm.shikongmall.com/skbm/index.html');
+// });
 
 // 用户身份验证相关的路由
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
