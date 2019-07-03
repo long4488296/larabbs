@@ -55,6 +55,18 @@ $skbmapi->version('v1', [
         // 刷新token
         $api->put('authorizations/current', 'AuthorizationsController@update')
         ->name('api.authorizations.update');
+        //忘记密码-验证手机是否注册
+        $api->post('user/checkphone', 'UsersController@checkphone')
+            ->name('api.user.checkphone');
+        //忘记密码-发送验证码
+        $api->post('user/forgetpassword', 'UsersController@forgetpassword')
+            ->name('api.user.forgetpassword');
+        //忘记密码-验证手机短信码
+        $api->post('user/verificationphone', 'UsersController@verificationphone')
+            ->name('api.user.verificationphone');
+        //忘记密码-重设登陆密码
+        $api->post('user/resetpassword', 'UsersController@resetpassword')
+            ->name('api.user.resetpassword');
         // 需要 token 验证的接口
         $api->group(['middleware' => 'api.auth'], function($api) {
             
