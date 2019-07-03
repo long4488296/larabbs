@@ -24,21 +24,29 @@ class UsersController extends Controller
         }
 
         $user = User::create([
-            'name' => $request->name,
-            'phone' => $verifyData['phone'],
-            'password' => bcrypt($request->password),
+            'user_name' => $request->name,
+            'realname'=>'1',
+            'alias' =>'2',
+            'msn'=>'1',
+            'qq'=>'1',
+            'office_phone'=>'1',
+            'home_phone'=>'1',
+            'credit_line'=>'1',
+            'email'=>$request->name,
+            'mobile_phone' => $verifyData['phone'],
+            'password' => $request->password,
         ]);
 
         // 清除验证码缓存
         \Cache::forget($request->verification_key);
-
-        return $this->response->item($user, new UserTransformer())
-        ->setMeta([
-            'access_token' => \Auth::guard('api')->fromUser($user),
-            'token_type' => 'Bearer',
-            'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
-        ])
-        ->setStatusCode(201);
+        return $this->response->item($user, new UserTransformer())->setStatusCode(201);
+        // return $this->response->item($user, new UserTransformer())
+        // ->setMeta([
+        //     'access_token' => \Auth::guard('api')->fromUser($user),
+        //     'token_type' => 'Bearer',
+        //     'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
+        // ])
+        // ->setStatusCode(201);
     }
 
     //用户信息

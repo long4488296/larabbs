@@ -23,11 +23,16 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     use Notifiable {
         notify as protected laravelNotify;
     }
+
+    protected $table = 'yj_users';
+    protected $primaryKey = 'user_id';
+    public $timestamps = false;
+
     public function findForPassport($username)
     {
         filter_var($username, FILTER_VALIDATE_EMAIL) ?
           $credentials['email'] = $username :
-          $credentials['phone'] = $username;
+          $credentials['mobile_phone'] = $username;
 
         return self::where($credentials)->first();
     }
@@ -47,26 +52,17 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     }
 
     protected $fillable = [
-        'name', 'phone','email', 'password', 'introduction', 'avatar',
+        //'name', 'phone','email', 'password', 'introduction', 'avatar',
+        'user_id','email','openid','user_name','realname','password','userimg','qrcode','qrcodes','question','answer','sex','birthday','user_money','real_money','gift_money','frozen_money','pay_points','rank_points','address_id','reg_time','last_login','last_time','last_ip','visit_count','user_rank','is_special','ec_salt','salt','parent_id','flag','alias','msn','qq','office_phone','home_phone','mobile_phone','is_validated','credit_line','passwd_question','passwd_answer','utype','addid','activation','paypassword','beginning_money','expense','promoters_id','discount','lifetime_discount','activity','activity_time',
     ];
 
     protected $hidden = [
         'password', 'remember_token',
     ];
 
-    public function topics()
-    {
-        return $this->hasMany(Topic::class);
-    }
-
     public function isAuthorOf($model)
     {
         return $this->id == $model->user_id;
-    }
-
-    public function replies()
-    {
-        return $this->hasMany(Reply::class);
     }
 
     public function markAsRead()
@@ -78,16 +74,24 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
 
     public function setPasswordAttribute($value)
     {
-        // 如果值的长度等于 60，即认为是已经做过加密的情况
-        if (strlen($value) != 60) {
+        // // 如果值的长度等于 60，即认为是已经做过加密的情况
+        // if (strlen($value) != 60) {
 
-            // 不等于 60，做密码加密处理
-            $value = bcrypt($value);
-        }
+        //     // 不等于 60，做密码加密处理
+        //     $value = bcrypt($value);
+        // }
 
         $this->attributes['password'] = $value;
     }
-
+    public  function setRealnameAttribute($value)
+    {
+        if($value==""){
+            $this->attributes['realname'] = "请实名";
+        }else{
+            $this->attributes['realname'] = "请实名";
+        }
+        
+    }
     public function setAvatarAttribute($path)
     {
         // 如果不是 `http` 子串开头，那就是从后台上传的，需要补全 URL
@@ -97,7 +101,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
             $path = config('app.url') . "/uploads/images/avatars/$path";
         }
 
-        $this->attributes['avatar'] = $path;
+        $this->attributes['userimg'] = $path;
     }
     public function getJWTIdentifier()
     {
