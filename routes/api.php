@@ -11,11 +11,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-$api = app('Dingo\Api\Routing\Router');
+$skbmapi = app('Dingo\Api\Routing\Router');
 
-$api->version('v1', [
+$skbmapi->version('v1', [
     'namespace' => 'App\Http\Controllers\Api',
-    'middleware' => 'serializer:array'
+    'middleware' => ['serializer:array','cors']
 ], function($api) {
     
     
@@ -24,13 +24,13 @@ $api->version('v1', [
         'limit' => config('api.rate_limits.access.limit'),
         'expires' => config('api.rate_limits.access.expires'),
     ],function($api){
-        // 版本号
-        $api->get('version', function() {
-            return response('this is version v1');
-        });
-        $api->put('version', function() {
-            return response('this is version v1');
-        });
+        // // 版本号
+        // $api->get('version', function() {
+        //     return response('this is version v1');
+        // });
+        // $api->put('version', function() {
+        //     return response('this is version v1');
+        // });
     });
     $api->group([
         'middleware' => 'api.throttle',
