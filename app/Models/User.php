@@ -71,14 +71,19 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
         $this->save();
         $this->unreadNotifications->markAsRead();
     }
-
+    public function getAuthPassword() {
+        //这样数据库字段为 passwords 也是可以认证的。
+        //return ['password' => $this->attributes['password'], 'salt' => $this->attributes['salt']];
+        return $this->password;
+    }
     public function setPasswordAttribute($value)
     {
-        // 如果值的长度等于 60，即认为是已经做过加密的情况
-        if (strlen($value) != 60) {
+        // 如果值的长度等于 32，即认为是已经做过加密的情况
+        if (strlen($value) != 32) {
 
             // 不等于 60，做密码加密处理
-            $value = bcrypt($value);
+           // $value = bcrypt($value);
+           $value = md5($value);
         }
 
         $this->attributes['password'] = $value;
@@ -111,5 +116,15 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    public function validateForPassportPasswordGrant($password)
+    {
+        # code...
+        if(md5($password)==$this->getAuthPassword()){
+            return true;
+        }else{
+            return false;
+        }
+        
     }
 }
