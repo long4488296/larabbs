@@ -37,6 +37,9 @@ $skbmapi->version('v1', [
         'limit' => config('api.rate_limits.sign.limit'),
         'expires' => config('api.rate_limits.sign.expires'),
     ], function($api) {
+        //关于我们
+        $api->get('aboutus', 'StaticController@aboutus')
+            ->name('api.StaticController.aboutus');
         // 短信验证码
         $api->post('verificationCodes', 'VerificationCodesController@store')
             ->name('api.verificationCodes.store');
@@ -76,8 +79,45 @@ $skbmapi->version('v1', [
             $api->get('user', 'UsersController@me')
                 ->name('api.user.show');
             //当前用户的首页聚合信息
-            $api->get('user', 'UsersController@me')
-                ->name('api.user.show');
+            $api->get('user/aggregate', 'AggController@me')
+                ->name('api.user.aggregate');
+             //订单
+            $api->get('user/orders', 'OrderController@me')
+                ->name('api.user.orders');
+            //订单中商品的物流信息
+            $api->get('user/orders/logistics', 'LogisticsController@me')
+                ->name('api.user.orders.logistics');
+            //商品
+            //商品聚合
+            $api->get('user/commodity', 'CommodityController@index')
+                ->name('api.user.commodity');
+            //商品单个详情
+            $api->get('user/commodity/{commodity}', 'CommodityController@me')
+                ->name('api.user.commodity.me');
+            //商品单个创建
+            $api->post('user/commodity', 'CommodityController@store')
+                ->name('api.user.commodity.store');
+            //商品单个修改单
+            $api->patch('user/commodity/{commodity}', 'CommodityController@update')
+                ->name('api.user.commodity.edit');
+            $api->delete('user/commodity/{commodity}', 'CommodityController@delete')
+                ->name('api.user.commodity.edit');
+            //店铺
+            $api->get('user/shop', 'ShopController@me')
+              ->name('api.user.shop');
+            //库存
+            $api->get('user/stock', 'StockController@me')
+              ->name('api.user.stock');
+            //营收数据
+            $api->get('user/revenue', 'RevenueController@me')
+              ->name('api.user.revenue');
+            //财务对账
+            $api->get('user/reconciliation', 'ReconciliationController@me')
+              ->name('api.user.reconciliation');
+            //消息
+            $api->get('user/notice', 'NoticeController@me')
+              ->name('api.user.notice');
+              
         });
     });
 });
