@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller as BaseController;
 use App\Http\Requests\TopicRequest;
 use App\Models\Category;
 use App\Models\User;
@@ -12,14 +13,17 @@ use Auth;
 use App\Handlers\ImageUploadHandler;
 use App\Models\Link;
 
-class TopicsController extends Controller
+class TopicsController extends BaseController
 {
     public function __construct()
     {
 
-        $this->middleware('auth', ['except' => ['index', 'show']]);
+        //$this->middleware('auth', ['except' => ['index', 'show']]);
     }
-
+    public function redirect_static_index(Request $request)
+    {
+        return redirect('/skbm/index.html');
+    }
     public function index(Request $request, Topic $topic, User $user, Link $link)
     {
         $topics = $topic->withOrder($request->order)->paginate(20);
