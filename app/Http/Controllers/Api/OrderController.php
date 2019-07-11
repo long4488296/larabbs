@@ -19,8 +19,11 @@ class OrderController extends Controller
             public function me(Request $request)
             {
                 //return $this->response->item( , new UserTransformer());
-                $json = '{
-                    "data": [{
+                $json = '{"data":{
+                    "order_id":"12312313123",
+                    "jine":"2100",
+                    "shouhuoren":{"name":"张望","phone":"15213122","dizhi":"朝阳"},
+                    "goods": [{
                         "dingdanhao": 2345688,
                         "goods_id": 1,
                         "goods_name": "石榴",
@@ -60,7 +63,7 @@ class OrderController extends Controller
                         "gongji": 72
                     }
                     ]
-                }';
+                }}';
                 $data = json_decode($json);
 
                 return $this->response->array([
