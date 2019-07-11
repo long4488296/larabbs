@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Transformers\UserTransformer;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Requests\Api\UserYQRequest;
 use Overtrue\EasySms\EasySms;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Api\ForgetPasswordRequest;
 use App\Http\Requests\Api\RestPasswordRequest;
 use App\Http\Requests\Api\ForgetPassword2Request;
@@ -52,7 +54,32 @@ class UsersController extends Controller
         // ])
         // ->setStatusCode(201);
     }
-
+    //邀请码注册
+    public function erstore(UserYQRequest $request)
+    {
+        
+        $promoters = DB::select('select promoters_id from yj_promoters where promoters_sn = ?', [$request->promoter]);
+        $promoters_id = 0;
+        if($promoters){
+            $promoters_id=$promoters[0]->promoters_id;
+        }
+        $user = User::create([
+            'user_name' => $request->phone,
+            'realname'=>'未实名',
+            'alias' =>'　',
+            'promoters_id'=>$promoters_id,
+            'msn'=>'　',
+            'qq'=>'　',
+            'office_phone'=> $request->phone,
+            'home_phone'=> $request->phone,
+            'credit_line'=>'0',
+            'email'=>$request->name,
+            'mobile_phone' => $request->phone,
+            'password' => $request->password,
+        ]);
+     
+        return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
+        }
     //用户信息
     public function me()
     {

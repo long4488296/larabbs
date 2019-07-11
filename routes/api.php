@@ -46,6 +46,8 @@ $skbmapi->version('v1', [
         // 用户注册
         $api->post('users', 'UsersController@store')
             ->name('api.users.store');
+        $api->post('erusers', 'UsersController@erstore')
+            ->name('api.users.erstore');
         // 图片验证码
         $api->post('captchas', 'CaptchasController@store')
             ->name('api.captchas.store');
@@ -89,19 +91,19 @@ $skbmapi->version('v1', [
                 ->name('api.user.orders.logistics');
             //商品
             //商品聚合
-            $api->get('user/commodity', 'CommodityController@index')
-                ->name('api.user.commodity');
+            $api->get('user/good', 'GoodsController@index')
+                ->name('api.user.good');
             //商品单个详情
-            $api->get('user/commodity/{commodity}', 'CommodityController@me')
-                ->name('api.user.commodity.me');
+            $api->get('user/good/{good}', 'GoodsController@show')
+                ->name('api.user.good.show');
             //商品单个创建
-            $api->post('user/commodity', 'CommodityController@store')
-                ->name('api.user.commodity.store');
+            $api->post('user/good', 'GoodsController@store')
+                ->name('api.user.good.store');
             //商品单个修改单
-            $api->patch('user/commodity/{commodity}', 'CommodityController@update')
-                ->name('api.user.commodity.edit');
-            $api->delete('user/commodity/{commodity}', 'CommodityController@delete')
-                ->name('api.user.commodity.edit');
+            $api->patch('user/good/{good}', 'GoodsController@update')
+                ->name('api.user.good.edit');
+            $api->delete('user/good/{good}', 'GoodsController@delete')
+                ->name('api.user.good.delete');
             //店铺
             $api->get('user/shop', 'ShopController@me')
               ->name('api.user.shop');
@@ -114,6 +116,8 @@ $skbmapi->version('v1', [
             //财务对账
             $api->get('user/reconciliation', 'ReconciliationController@me')
               ->name('api.user.reconciliation');
+              $api->get('user/reconciliation/sj', 'ReconciliationController@sj')
+              ->name('api.user.reconciliation_js');
             //消息
             $api->get('user/notice', 'NoticeController@me')
               ->name('api.user.notice');

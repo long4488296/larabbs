@@ -66,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','paypassword',
     ];
 
     public function isAuthorOf($model)
@@ -96,15 +96,6 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
         }
 
         $this->attributes['password'] = $value;
-    }
-    public  function setRealnameAttribute($value)
-    {
-        if($value==""){
-            $this->attributes['realname'] = "请实名";
-        }else{
-            $this->attributes['realname'] = "请实名";
-        }
-        
     }
     public function setAvatarAttribute($path)
     {
