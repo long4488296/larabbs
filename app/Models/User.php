@@ -27,12 +27,21 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     protected $table = 'yj_users';
     protected $primaryKey = 'user_id';
     public $timestamps = false;
-
+    public function seller()
+    {
+        return $this->belongsTo(UserSeller::class,'user_id');
+    }
     public function findForPassport($username)
     {
-        filter_var($username, FILTER_VALIDATE_EMAIL) ?
-          $credentials['email'] = $username :
-          $credentials['mobile_phone'] = $username;
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            $credentials['email'] = $username;
+        } elseif (preg_match("/^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$/", $username)) {
+            $credentials['mobile_phone'] = $username;
+        } else {
+            $credentials['user_name'] = $username;
+        }
+       
+        $credentials['utype'] = 3;//用户类型3，商户
 
         return self::where($credentials)->first();
     }
@@ -120,11 +129,10 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     public function validateForPassportPasswordGrant($password)
     {
         # code...
-        if(md5($password)==$this->getAuthPassword()){
-            return true;
+        if(is_null($this->attributes['ec_salt'])){
+            return md5($password)==$this->getAuthPassword();
         }else{
-            return false;
+            return md5(md5($password).$this->attributes['ec_salt'])==$this->getAuthPassword();
         }
-        
     }
 }
