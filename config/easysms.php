@@ -9,7 +9,7 @@ return [
         'strategy' => \Overtrue\EasySms\Strategies\OrderStrategy::class,
         // 默认可用的发送网关
         'gateways' => [
-            'yunpian',
+            'chuanglan',
         ],
     ],
     // 可用的网关配置
@@ -19,6 +19,18 @@ return [
         ],
         'yunpian' => [
             'api_key' => env('YUNPIAN_API_KEY'),
+        ],
+        'chuanglan' => [
+            'account' => 'N7370170',
+            'password' => '9BGmn4rzwab71fk',
+    
+            // \Overtrue\EasySms\Gateways\ChuanglanGateway::CHANNEL_VALIDATE_CODE  => 验证码通道（默认）
+            // \Overtrue\EasySms\Gateways\ChuanglanGateway::CHANNEL_PROMOTION_CODE => 会员营销通道
+            'channel'  => \Overtrue\EasySms\Gateways\ChuanglanGateway::CHANNEL_VALIDATE_CODE, 
+    
+            // 会员营销通道 特定参数。创蓝规定：api提交营销短信的时候，需要自己加短信的签名及退订信息
+            'sign' => '【时空商城】',
+            'unsubscribe' => '回TD退订', 
         ],
     ],
 ];

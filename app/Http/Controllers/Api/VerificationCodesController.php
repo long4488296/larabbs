@@ -32,10 +32,10 @@ class VerificationCodesController extends Controller
     
             try {
                 $result = $easySms->send($phone, [
-                    'content'  =>  "【Lbbs社区】您的验证码是{$code}。如非本人操作，请忽略本短信"
+                    'content'  =>  "【时空商城】您的验证码为：{$code}，请在5分钟内输入，为保证账号安全请勿转发他人。"
                 ]);
             } catch (\Overtrue\EasySms\Exceptions\NoGatewayAvailableException $exception) {
-                $message = $exception->getException('yunpian')->getMessage();
+                $message = $exception->getException('chuanglan')->getMessage();
                 return $this->response->errorInternal($message ?: '短信发送异常');
             }
         }

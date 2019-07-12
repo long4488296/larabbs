@@ -56,28 +56,39 @@ class UsersController extends Controller
     }
     //邀请码注册
     public function erstore(UserYQRequest $request)
-    {
+    { 
+        $verifyData = \Cache::get($request->verification_key);
+
+        if (!$verifyData) {
+            return $this->response->error('验证码已失效', 422);
+        }
+
+        if (!hash_equals($verifyData['code'], $request->verification_code)) {
+            // 返回401
+            return $this->response->errorUnauthorized('验证码错误');
+        }
         
         $promoters = DB::select('select promoters_id from yj_promoters where promoters_sn = ?', [$request->promoter]);
         $promoters_id = 0;
         if($promoters){
             $promoters_id=$promoters[0]->promoters_id;
         }
+        $phone = $verifyData['phone'];
         $user = User::create([
-            'user_name' => $request->phone,
+            'user_name' => $phone,
             'realname'=>'未实名',
             'alias' =>'　',
             'promoters_id'=>$promoters_id,
             'msn'=>'　',
             'qq'=>'　',
-            'office_phone'=> $request->phone,
-            'home_phone'=> $request->phone,
+            'office_phone'=> $phone,
+            'home_phone'=> $phone,
             'credit_line'=>'0',
-            'email'=>$request->name,
-            'mobile_phone' => $request->phone,
+            'email'=>$phone,
+            'mobile_phone' => $phone,
             'password' => $request->password,
         ]);
-     
+        \Cache::forget($request->verification_key);
         return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
         }
     //用户信息

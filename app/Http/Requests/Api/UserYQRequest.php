@@ -19,6 +19,8 @@ class UserYQRequest extends FormRequest
             'phone' => 'required|between:3,25|regex:/[\w\x{4e00}-\x{9fa5}]{2,25}/u|unique:yj_users,mobile_phone',
             'password' => 'required|string|min:6',
             'promoter' => 'required|string|size:6|exists:yj_promoters,promoters_sn',
+            'verification_key' => 'required|string',
+            'verification_code' => 'required|string'
         ];
     }
     public function attributes()
@@ -26,6 +28,8 @@ class UserYQRequest extends FormRequest
         return [
             'promoter' => '邀请码不正确',
             'phone' => '手机注册过',
+            'verification_key' => '短信验证码 key',
+            'verification_code' => '短信验证码'
         ];
     }
 }
