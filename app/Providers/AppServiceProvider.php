@@ -16,6 +16,10 @@ class AppServiceProvider extends ServiceProvider
         if (app()->isLocal()) {
             $this->app->register(\VIACreative\SudoSu\ServiceProvider::class);
         }
+        app(\Dingo\Api\Exception\Handler::class)->register(function (\App\Exceptions\Api\CommonException $exception) {
+            //return response($exception->getMessage(), $exception->getCode());
+            //return $exception->render();
+        });
     }
 
     /**

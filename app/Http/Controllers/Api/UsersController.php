@@ -13,6 +13,10 @@ use App\Http\Requests\Api\ForgetPasswordRequest;
 use App\Http\Requests\Api\RestPasswordRequest;
 use App\Http\Requests\Api\ForgetPassword2Request;
 
+use App\Exceptions\Api\CommonException;
+
+
+
 class UsersController extends Controller
 {
     //注册
@@ -57,15 +61,18 @@ class UsersController extends Controller
     //邀请码注册
     public function erstore(UserYQRequest $request)
     { 
+        
         $verifyData = \Cache::get($request->verification_key);
 
         if (!$verifyData) {
-            return $this->response->error('验证码已失效', 422);
+            return $this->response->error('验证码已失效.', 422);
+            //throw new CommonException('验证码已失效',422);
         }
 
         if (!hash_equals($verifyData['code'], $request->verification_code)) {
             // 返回401
-            return $this->response->errorUnauthorized('验证码错误');
+            return $this->response->error('验证码错误.',422);
+            //throw new CommonException('验证码错误',422);
         }
         
         $promoters = DB::select('select promoters_id from yj_promoters where promoters_sn = ?', [$request->promoter]);
@@ -89,8 +96,12 @@ class UsersController extends Controller
             'password' => $request->password,
         ]);
         \Cache::forget($request->verification_key);
-        return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
-        }
+        //return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
+        return $this->response->array([
+            'phone' => $phone,
+            'isreg' => true
+        ])->setStatusCode(201);
+    }
     //用户信息
     public function me()
     {
@@ -115,10 +126,10 @@ class UsersController extends Controller
     
             try {
                 $result = $easySms->send($phone, [
-                    'content'  =>  "【Lbbs社区】您的验证码是{$code}。如非本人操作，请忽略本短信"
+                    'content'  =>  "【时空商城】您的验证码为：{$code}，请在5分钟内输入，为保证账号安全请勿转发他人。"
                 ]);
             } catch (\Overtrue\EasySms\Exceptions\NoGatewayAvailableException $exception) {
-                $message = $exception->getException('yunpian')->getMessage();
+                $message = $exception->getException('chuanglan')->getMessage();
                 return $this->response->errorInternal($message ?: '短信发送异常');
             }
         }
