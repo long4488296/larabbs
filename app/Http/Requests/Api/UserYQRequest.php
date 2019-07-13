@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Api;
 
-use Illuminate\Foundation\Http\FormRequest;
-
 class UserYQRequest extends FormRequest
 {
 
@@ -20,16 +18,18 @@ class UserYQRequest extends FormRequest
             'password' => 'required|string|min:6',
             'promoter' => 'required|string|size:6|exists:yj_promoters,promoters_sn',
             'verification_key' => 'required|string',
-            'verification_code' => 'required|string'
+            'verification_code' => 'required|string',
         ];
     }
     public function attributes()
     {
         return [
-            'promoter' => '邀请码不正确',
-            'phone' => '手机注册过',
-            'verification_key' => '短信验证码 key',
-            'verification_code' => '短信验证码'
+            'password' => '注册密码，',
+            'promoter' => '邀请码，',
+            'phone' => '手机号码错误，',
+            'verification_key' => '短信验证码key，',
+            'verification_code' => '短信验证码，'
         ];
     }
+    
 }

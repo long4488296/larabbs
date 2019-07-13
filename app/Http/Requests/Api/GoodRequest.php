@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Requests\API;
-use Illuminate\Foundation\Http\FormRequest;
+namespace App\Http\Requests\Api;
+
 class GoodRequest extends FormRequest
 {
     public function rules()
@@ -15,7 +15,7 @@ class GoodRequest extends FormRequest
             case 'PATCH':
             {
                 return [
-                    'goods_name'       => 'required|min:2',
+                    'goods_name' => 'required|min:2',
                     'cat_id' => 'required|numeric'
                 ];
             }
