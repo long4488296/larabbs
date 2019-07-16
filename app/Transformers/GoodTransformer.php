@@ -7,7 +7,7 @@ use League\Fractal\TransformerAbstract;
 
 class GoodTransformer extends TransformerAbstract
 {
-    protected $availableIncludes = ['user', 'category'];
+    protected $availableIncludes = ['seller', 'category'];
     
     public function transform(Good $good)
     {   
@@ -31,9 +31,9 @@ class GoodTransformer extends TransformerAbstract
         // ];
     }
 
-    public function includeUser(Good $good)
+    public function includeSeller(Good $good)
     {
-        return $this->item($good->user, new UserTransformer());
+        return $this->item($good->seller->user, new UserTransformer());
     }
 
     public function includeCategory(Good $good)

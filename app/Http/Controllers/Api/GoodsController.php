@@ -12,75 +12,46 @@ use App\Serializers\DataArraySerializer;
 
 class GoodsController extends Controller
 {
-    public function __construct()
-    {
-
-        //$this->middleware('auth', ['except' => ['index', 'show']]);
-    }
-
     //商品
     public function index(GoodRequest $request,Good $good)
     {
-        //$bookmarks = Auth::user()->bookmarks;
-        // $this_user = $this->user();
-        // $goods = $this_user->seller()
-        // //->where('seller_cat_id','>',0)
-        // // ->where('cat_id','!=', 327)
-        // //->withOrder($request->order)
-        // ->paginate(20);
-        // if($goods['total']==0){
-           
-        //     //->where('seller_cat_id','>',0)
-        //     // ->where('cat_id','!=', 327)
-            
-            
-        // }
-    //     $query = $good->query();
-    //     if ($categoryId = $request->category_id) {
-    //       $query->where('category_id', $categoryId);
-    //   }
-    //   switch ($request->order) {
-    //     case 'recent':
-    //         $query->recent();
-    //         break;
+        //获取当前用户的商家和旗下商品goods_ids合集 
+        $this_user_goods_ids = $this->user()
+        ->seller->goods
+        ->keyBy('goods_id')
+        ->keys();
 
-    //     default:
-    //         $query->recentReplied();
-    //         break;
-    // }
-
-    //     $goods = $query->paginate();
-        $goods = $good->where('goods_id','>',1)
-                      ->orderBy('goods_id', 'desc')
-                      ->paginate(5);
-                        // return $this->response->array([
-                        //     $request->order
-                        //       ])->setStatusCode(200);
+                               
+        $goods = $good->whereIn('goods_id',$this_user_goods_ids)
+                      ->orderBy('goods_id','desc')
+                      ->paginate(4);
+        // $goods = $good->paginate(4);
+        
         return $this->response->paginator($goods, new GoodTransformer(),['key' => 'data']);
         //return $this->response->item( $this_user, new UserTransformer());
         // return $this->response->array([
-        //   'data'=>$goods
+        //   'data'=>'1'
         //   ])->setStatusCode(200);
         //return $this->response->array(['data'=>$data->data,])->setStatusCode(200);
     }
 
-    public function show(GoodRequest $request,Good $good,$goods_id)
+    public function show(GoodRequest $request,Good $good)
     {   
-        $goods = $good->where('goods_id', $goods_id)
-                       ->firstOrFail();
         
         return $this->response->item(
-            $goods,
+            $good,
             new GoodTransformer(),
-            function ($resource, $fractal) {
-                $fractal->setSerializer(new DataArraySerializer);
-            })
+            ['key' => 'user'])
+            // ->setMeta([
+            //     'a'=>1
+            // ])
             ->setStatusCode(200);
     }
+    
     public function store(GoodRequest $request, Good $good)
     {
         $good->fill($request->all());
-        $good->seller_id = $this->user()->user_id;
+        $good->seller_id = $this->user()->seller->id;
         $good->save();
         // return $this->response->array([
         //   'data'=>$this->response
@@ -88,6 +59,16 @@ class GoodsController extends Controller
         return $this->response
         ->item($good, new GoodTransformer())
         ->setStatusCode(201);
+    }
+    public function update(GoodRequest $request, Good $good)
+    {
+        //$this->authorize('update', $good);
+        $this->user()->givePermissionTo('manage_contents');
+        $good->update($request->all());
+        return $this->response->item($good, new GoodTransformer())
+        ->setMeta([
+                'a'=>$this->user()->can('manage_contents')
+            ]);
     }
 
 }

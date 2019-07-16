@@ -34,7 +34,8 @@ class DataArraySerializer extends ArraySerializer
     public function item($resourceKey, array $data)
     {
         return $data;
-        //return ['data' => $data, 'status_code' => 200, 'message' => 'success'];
+        return ['data' => $data];
+        return ['data' => $data, 'status_code' => 200, 'message' => 'success'];
     }
 
     /**

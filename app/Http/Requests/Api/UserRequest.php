@@ -14,7 +14,7 @@ class UserRequest extends FormRequest
     {
         return [
             //'name' => 'required|between:3,25|regex:/^[A-Za-z0-9\-\_]+$/|unique:users,name',
-            'name' => 'required|between:3,25|regex:/[\w\x{4e00}-\x{9fa5}]{2,25}/u|unique:yj_users,user_name',
+            'name' => 'required|between:3,25|regex:/[\w\x{4e00}-\x{9fa5}]{2,25}/u|unique:shopsql.users,user_name',
             'password' => 'required|string|min:6',
             'verification_key' => 'required|string',
             'verification_code' => 'required|string',

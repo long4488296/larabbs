@@ -15,7 +15,7 @@ $skbmapi = app('Dingo\Api\Routing\Router');
 
 $skbmapi->version('v1', [
     'namespace' => 'App\Http\Controllers\Api',
-    'middleware' => ['serializer:array','cors']
+    'middleware' => ['serializer:default_array','cors','bindings']
 ], function($api) {
     
     

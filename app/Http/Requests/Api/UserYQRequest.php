@@ -14,9 +14,9 @@ class UserYQRequest extends FormRequest
     {
         return [
             //'name' => 'required|between:3,25|regex:/^[A-Za-z0-9\-\_]+$/|unique:users,name',
-            'phone' => 'required|between:3,25|regex:/[\w\x{4e00}-\x{9fa5}]{2,25}/u|unique:yj_users,mobile_phone',
+            'phone' => 'required|between:3,25|regex:/[\w\x{4e00}-\x{9fa5}]{2,25}/u|unique:shopsql.users,mobile_phone',
             'password' => 'required|string|min:6',
-            'promoter' => 'required|string|size:6|exists:yj_promoters,promoters_sn',
+            'promoter' => 'required|string|size:6|exists:shopsql.promoters,promoters_sn',
             'verification_key' => 'required|string',
             'verification_code' => 'required|string',
         ];

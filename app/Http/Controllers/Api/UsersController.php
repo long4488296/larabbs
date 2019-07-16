@@ -75,10 +75,10 @@ class UsersController extends Controller
             //throw new CommonException('验证码错误',422);
         }
         
-        $promoters = DB::select('select promoters_id from yj_promoters where promoters_sn = ?', [$request->promoter]);
+        $promoters = DB::connection('shopsql')->table('promoters')->where('promoters_sn',$request->promoter)->first();
         $promoters_id = 0;
         if($promoters){
-            $promoters_id=$promoters[0]->promoters_id;
+            $promoters_id=$promoters->promoters_id;
         }
         $phone = $verifyData['phone'];
         $user = User::create([

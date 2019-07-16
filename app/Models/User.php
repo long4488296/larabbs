@@ -23,13 +23,18 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     use Notifiable {
         notify as protected laravelNotify;
     }
-
-    protected $table = 'yj_users';
+    /**
+     * 模型的连接名称
+     *
+     * @var string
+     */
+    protected $connection = 'shopsql';
+    protected $table = 'users';
     protected $primaryKey = 'user_id';
     public $timestamps = false;
     public function seller()
     {
-        return $this->belongsTo(UserSeller::class,'user_id');
+        return $this->hasOne(UserSeller::class, 'user_id');
     }
     public function findForPassport($username)
     {
