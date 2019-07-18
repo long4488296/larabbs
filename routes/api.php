@@ -91,18 +91,22 @@ $skbmapi->version('v1', [
                 ->name('api.user.orders.logistics');
             //商品
             //商品聚合
-            $api->get('user/good', 'GoodsController@index')
+            $api->get('user/good', 'GoodController@index')
                 ->name('api.user.good');
             //商品单个详情
-            $api->get('user/good/{good}', 'GoodsController@show')
+            $api->get('user/good/{good}', 'GoodController@show')
                 ->name('api.user.good.show');
             //商品单个创建
-            $api->post('user/good', 'GoodsController@store')
+            $api->post('user/good', 'GoodController@store')
                 ->name('api.user.good.store');
             //商品单个修改单
-            $api->patch('user/good/{good}', 'GoodsController@update')
+            $api->patch('user/good/{good}', 'GoodController@update')
                 ->name('api.user.good.edit');
-            $api->delete('user/good/{good}', 'GoodsController@delete')
+            $api->patch('user/good/{good}/sele', 'GoodController@sele')
+                ->name('api.user.good.sele');
+            $api->patch('user/good/{good}/unsele', 'GoodController@unsele')
+                ->name('api.user.good.unsele');
+            $api->delete('user/good/{good}', 'GoodController@delete')
                 ->name('api.user.good.delete');
             //店铺
             $api->get('user/shop', 'ShopController@me')
