@@ -20,10 +20,10 @@ class GoodRequest extends FormRequest
             case 'PUT':
             case 'PATCH':
             {
-                return [
-                    'goods_name' => 'required|min:2',
-                    'cat_id' => 'required|numeric|exists:shopsql.category,cat_id'
-                ];
+                // return [
+                //     'goods_name' => 'required|min:2',
+                //     'cat_id' => 'required|numeric|exists:shopsql.category,cat_id'
+                // ];
             }
             case 'GET':
             case 'DELETE':

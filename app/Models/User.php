@@ -4,17 +4,17 @@ namespace App\Models;
 
 
 use Auth;
-use Spatie\Permission\Traits\HasRoles;
+//use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Laravel\Passport\HasApiTokens;
-
+use Illuminate\Auth\Access\AuthorizationException;
 class User extends Authenticatable implements MustVerifyEmailContract, JWTSubject
 {
-    use HasRoles;
+    //use HasRoles;
     use MustVerifyEmailTrait;
     use Traits\ActiveUserHelper;
     use Traits\LastActivedAtHelper;
@@ -45,9 +45,8 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
         } else {
             $credentials['user_name'] = $username;
         }
-       
-        $credentials['utype'] = 3;//用户类型3，商户
-
+        //return self::first();
+        //$credentials['utype'] = 3;//用户类型3，商户
         return self::where($credentials)->first();
     }
     public function notify($instance)
@@ -76,7 +75,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
 
     public function isAuthorOf($model)
     {
-        return $this->id == $model->user_id;
+        return $this->seller->id == $model->seller_id;
     }
 
     public function markAsRead()
@@ -125,6 +124,9 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     public function validateForPassportPasswordGrant($password)
     {
         # code...
+        if($this->attributes['utype']!=3){
+            throw new AuthorizationException('Current landing users are not business users.['.$this->attributes['user_id']);
+        }
         if(is_null($this->attributes['ec_salt'])){
             return md5($password)==$this->getAuthPassword();
         }else{
