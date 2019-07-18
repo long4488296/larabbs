@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Api\ForgetPasswordRequest;
 use App\Http\Requests\Api\RestPasswordRequest;
 use App\Http\Requests\Api\ForgetPassword2Request;
-
+use App\Http\Services\APIHelper;
 use App\Exceptions\Api\CommonException;
 
 
@@ -97,9 +97,22 @@ class UsersController extends Controller
         ]);
         \Cache::forget($request->verification_key);
         //return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
+        $data = [
+            'user_id'=>$user->user_id,
+            'user_name'=>$user->user_name,
+            'promter_id'=>$user->promoters_id,
+            'skstr'=>md5($user->user_id.$user->user_name.$user->promoters_id)
+        ];
+
+        
+        
+        $api = new APIHelper();
+        $res =$api->post($data,'');
+        $isreg = json_decode($res);
         return $this->response->array([
             'phone' => $phone,
-            'isreg' => true
+            'isreg' => true,
+            'bonuses'=>$isreg
         ])->setStatusCode(201);
     }
     //用户信息
