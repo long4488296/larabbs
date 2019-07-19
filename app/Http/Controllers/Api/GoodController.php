@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Good;
-use App\Models\Topic;
+use App\Exceptions\Api\CommonException;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\GoodRequest;
 use App\Transformers\GoodTransformer;
 use Illuminate\Support\Facades\DB;
 // use App\Serializers\DataArraySerializer;
 use Illuminate\Support\Facades\Gate;
+
 
 class GoodController extends Controller
 {
@@ -111,6 +112,9 @@ class GoodController extends Controller
     public function sele(GoodRequest $request, Good $good)
     {
         $this->user->can('update',$good); 
+        if($good->is_on_sale==1){
+            throw new CommonException('该商品已经上架了,不要重复操作.',500);
+        }
         $good->is_on_sale = 1;
         $good->save();
         return $this->response->item($good, new GoodTransformer());
@@ -118,6 +122,9 @@ class GoodController extends Controller
     public function unsele(GoodRequest $request, Good $good)
     {
         $this->user->can('update',$good); 
+        if($good->is_on_sale == 0){
+            throw new CommonException('该商品已经下架了,不要重复操作.',500);
+        }
         $good->is_on_sale = 0;
         $good->save();
         return $this->response->item($good, new GoodTransformer());
