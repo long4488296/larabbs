@@ -48,6 +48,8 @@ $skbmapi->version('v1', [
             ->name('api.users.store');
         $api->post('erusers', 'UsersController@erstore')
             ->name('api.users.erstore');
+        $api->post('ergetreward', 'UsersController@ergetreward')
+            ->name('api.users.ergetreward');
         // 图片验证码
         $api->post('captchas', 'CaptchasController@store')
             ->name('api.captchas.store');
@@ -84,11 +86,27 @@ $skbmapi->version('v1', [
             $api->get('user/aggregate', 'AggController@me')
                 ->name('api.user.aggregate');
              //订单
-            $api->get('user/orders', 'OrderController@me')
-                ->name('api.user.orders');
+             //订单聚合
+             $api->get('user/order', 'OrderController@index')
+             ->name('api.user.order');
+            //商品单个详情
+            $api->get('user/order/{order}', 'OrderController@show')
+                ->name('api.user.order.show');
+            //商品单个创建
+            $api->post('user/order', 'OrderController@store')
+                ->name('api.user.order.store');
+            //商品单个修改单
+            $api->patch('user/order/{order}', 'OrderController@update')
+                ->name('api.user.order.edit');
+            $api->patch('user/order/{order}/sele', 'OrderController@sele')
+                ->name('api.user.order.sele');
+            $api->patch('user/order/{order}/unsele', 'OrderController@unsele')
+                ->name('api.user.order.unsele');
+            $api->delete('user/order/{order}', 'OrderController@delete')
+                ->name('api.user.order.delete');
             //订单中商品的物流信息
-            $api->get('user/orders/logistics', 'LogisticsController@me')
-                ->name('api.user.orders.logistics');
+            $api->get('user/order/logistics', 'LogisticsController@me')
+                ->name('api.user.order.logistics');
             //商品
             //商品聚合
             $api->get('user/good', 'GoodController@index')
@@ -125,6 +143,10 @@ $skbmapi->version('v1', [
             //消息
             $api->get('user/notice', 'NoticeController@me')
               ->name('api.user.notice');
+            //用户相册
+            //图片资源
+            $api->post('user/images', 'ImagesController@store')
+                ->name('api.user.images.store');
               
         });
     });
