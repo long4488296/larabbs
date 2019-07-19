@@ -29,7 +29,7 @@ return [
             'channel'  => \Overtrue\EasySms\Gateways\ChuanglanGateway::CHANNEL_VALIDATE_CODE, 
     
             // 会员营销通道 特定参数。创蓝规定：api提交营销短信的时候，需要自己加短信的签名及退订信息
-            'sign' => '【时空商城】',
+            'sign' => '【时空先生】',
             'unsubscribe' => '回TD退订', 
         ],
     ],
