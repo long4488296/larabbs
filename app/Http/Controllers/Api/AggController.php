@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use App\Transformers\UserTransformer;
-use App\Http\Requests\Api\UserRequest;
-use Overtrue\EasySms\EasySms;
-use App\Http\Requests\Api\ForgetPasswordRequest;
-use App\Http\Requests\Api\RestPasswordRequest;
-use App\Http\Requests\Api\ForgetPassword2Request;
-
+use App\Models\Category;
+use App\Transformers\CategoryTransformer;
 class AggController extends Controller
 {
   
@@ -27,17 +21,28 @@ class AggController extends Controller
         //     "complete": 60,
         //     "daifa": 2
         //   }
+        $tra = new CategoryTransformer();
+        //$category =$tra->transform(Category::all());
+       // $category =Category::all();
+        $category = Category::TopLevel()->get();
+       // dd($category);
+        $re =$category;
         $data = [
-            "price"=>399999,
-            "selfmonth"=>30,
-            "selfday"=> 6,
-            "sevenday"=> 15,
-            "complete"=>60,
-            "daifa"=> 2
+            "price"=>399999,//当日成交金额汇总
+            "selfmonth"=>30,//本月订单数
+            "selfday"=> 6,//今日订单数
+            "sevenday"=> 15,//近7日订单数
+            "complete"=>60,//已完成
+            "daifa"=> 2,//需要发货的订单
+            "shop"=>["ischeck"=>true],
+            "notice"=>[["id"=>1,"new"=>6,"shijian"=>time()],["id"=>1,"new"=>6,"shijian"=>time()]],
+            "category"=>$re,
         ];
-        return $this->response->array([
-            'data' => $data,
-        ])->setStatusCode(200);
+         // return $this->response->array([
+        //   'data'=>'1'
+        //   ])->setStatusCode(200);
+        return $this->response->array(
+             $data)->setStatusCode(200);
     }
 
 }
