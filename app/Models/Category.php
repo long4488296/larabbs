@@ -16,22 +16,25 @@ class Category extends Model
      *
      * @var string
      */
-    protected $connection = 'shopsql';
+    // protected $connection = 'shopsql';
     //不能批量赋值
     protected $guarded = ['cat_id', 'cat_name']; //这些字段禁止维护
 	public $parentKey = 'parent_id'; //必要字段                MySQL需加索引
 	public $orderKey = 'sort_order'; //无需此字段请设置NULL   MySQL需加索引
 	public $pathKey = null; //无需此字段请设置NULL     MySQL需加索引
-	public $levelKey = null; //无需此字段请设置NULL   MySQL需加索引
-    public function parent()
-    {
-        $builder = $this->hasMany(get_class($this), $this->parentKey);
-		!empty($this->orderKey) && $builder->orderBy($this->orderKey, 'ASC');
-		return $builder;
+    public $levelKey = null; //无需此字段请设置NULL   MySQL需加索引
+    protected $visible = ['cat_id','cat_name','parent_id','sort_order','childrens'];
+    protected $hidden = [ 'order_sn'];
+   
+    public function children(){
+        return $this->hasMany(get_class($this),$this->parentKey);
     }
-
-    public function children()
-    {
-        return $this->hasOne(get_class($this), $this->parentKey);
+    public function childrens(){
+        return $this->children()->with('children');
+    }
+    public function scopeTopLevel($query){
+        $query->where(['parent_id'=>0,'is_show'=>1])
+              ->orderBy($this->orderKey, 'desc');
+        return $query->with(['childrens']);
     }
 }
