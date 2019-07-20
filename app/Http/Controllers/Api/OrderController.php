@@ -2,73 +2,127 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+use App\Models\Order;
 use Illuminate\Http\Request;
-use App\Transformers\UserTransformer;
-use App\Http\Requests\Api\UserRequest;
-use Overtrue\EasySms\EasySms;
-use App\Http\Requests\Api\ForgetPasswordRequest;
-use App\Http\Requests\Api\RestPasswordRequest;
-use App\Http\Requests\Api\ForgetPassword2Request;
+use App\Transformers\OrderTransformer as ThisTransformer;
+use App\Http\Requests\Api\OrderRequest;
+
 
 class OrderController extends Controller
 {
-  
+    //订单
+    public function index(OrderRequest $request,Order $order )
+    {
+        //获取当前用户的商家和旗下商品goods_ids合集 
+        $type = $request->type ?$request->type:'all';
+        $column =  $request->column ?$request->column:'shipping_name';
+        $value = $request->value ? $request->value:false;
+        $types = [
+            'index'     => 1,
+            'all'       => 2,
+            'unshipped' => 3,
+            'shipped'   => 4,
+            'finish'    => 5,
+        ];
+        
+        $typevalue = $types[$type];
+        
+        $transform = new ThisTransformer();
+       
+        if($type=='index'){
+            $index     = $order->Curuser($this->user())->OrderType(2)->like($column,$value)->WithOrder($request->order)->paginate(10);
+            $unshipped = $order->Curuser($this->user())->OrderType(3)->like($column,$value)->WithOrder($request->order)->paginate(10);
+            $shipped   = $order->Curuser($this->user())->OrderType(4)->like($column,$value)->WithOrder($request->order)->paginate(10);
+            $finish    = $order->Curuser($this->user())->OrderType(5)->like($column,$value)->WithOrder($request->order)->paginate(10);
+            return $this->response->array([
+                            'alltotal'=>[
+                                'index'=>$index->total(),
+                                'unshipped'=>$unshipped->total(),
+                                'shipped'=>$shipped->total(),
+                                'finish'=>$finish->total(),
+                            ],
+                            'index'=>$index,
+                            // 'index'=>$transform->transform($index),
+                            // 'unshipped'=>$transform->transform($unshipped),
+                            // 'shipped'=>$transform->transform($shipped),
+                            // 'finish'=>$transform->transform($finish),
 
-            //首页聚合信息
-            public function me(Request $request)
-            {
-                //return $this->response->item( , new UserTransformer());
-                $json = '{"data":{
-                    "order_id":"12312313123",
-                    "jine":"2100",
-                    "shouhuoren":{"name":"张望","phone":"15213122","dizhi":"朝阳"},
-                    "goods": [{
-                        "dingdanhao": 2345688,
-                        "goods_id": 1,
-                        "goods_name": "石榴",
-                        "guige": "4公斤/箱",
-                        "price": 36,
-                        "yuanprice": 80,
-                        "member": "张武",
-                        "phone": 13456788888,
-                        "address": "北京市昌平区",
-                        "num": 2,
-                        "gongji": 72
-                    },
-                    {
-                        "dingdanhao": 2345688,
-                        "goods_id": 2,
-                        "goods_name": "苹果",
-                        "guige": "5公斤/箱",
-                        "price": 36,
-                        "yuanprice": 80,
-                        "member": "张武",
-                        "phone": 13456788888,
-                        "address": "北京市昌平区",
-                        "num": 2,
-                        "gongji": 72
-                    },
-                    {
-                        "dingdanhao": 2345688,
-                        "goods_id": 3,
-                        "goods_name": "李子",
-                        "guige": "2公斤/箱",
-                        "price": 36,
-                        "yuanprice": 80,
-                        "member": "张武",
-                        "phone": 13456788888,
-                        "address": "北京市昌平区",
-                        "num": 2,
-                        "gongji": 72
-                    }
-                    ]
-                }}';
-                $data = json_decode($json);
+                    ])->setStatusCode(200);
+        }else{
+            $order  = $order->Curuser($this->user())->OrderType($typevalue)
+                    ->like($column,$value)
+                    ->WithOrder($request->order)
+                    ->paginate(10);
+        }
+       
+        
+        
+        return $this->response->paginator($order, new ThisTransformer(),['key' => 'data']);
+        // return $this->response->array([
+        //   'data'=>'1'
+        //   ])->setStatusCode(200);
+        //return $this->response->array(['data'=>$data->data,])->setStatusCode(200);
+    }
 
-                return $this->response->array([
-                    'data'=>$data->data,
-                ])->setStatusCode(200);
-            }
+    public function show(OrderRequest $request,Order $order )
+    {   
+        
+        return $this->response->item(
+            $order,
+            new ThisTransformer(),
+            ['key' => 'user'])
+            // ->setMeta([
+            //     'a'=>1
+            // ])
+            ->setStatusCode(200);
+    }
+    
+    public function store(OrderRequest $request, Order $order )
+    {
+        $order->fill($request->all());
+        $order->seller_id = $this->user()->seller->id;
+        $order->save();
+        // return $this->response->array([
+        //   'data'=>$this->response
+        //   ])->setStatusCode(200);
+        return $this->response
+        ->item($order, new ThisTransformer())
+        ->setStatusCode(201);
+    }
+    public function update(OrderRequest $request, Order $order )
+    {
+        //dd($this->authorize);
+        $this->user->can('update',$order); 
+        //$this->authorize('update', Post::class);
+        //$this->authorize('update', $order);
+        // $this->user()->givePermissionTo('manage_contents');
+        $data = $request->all();
+        $data['seller_id'] = $this->user()->seller->id;
+        $order->update($data);
+        return $this->response->item($order, new ThisTransformer());
+    }
+    public function sele(OrderRequest $request, Order $order )
+    {
+        $this->user->can('update',$order); 
+        $order->is_on_sale = 1;
+        $order->save();
+        return $this->response->item($order, new ThisTransformer());
+    }
+    public function unsele(OrderRequest $request, Order $order )
+    {
+        $this->user->can('update',$order); 
+        $order->is_on_sale = 0;
+        $order->save();
+        return $this->response->item($order, new ThisTransformer());
+    }
+    public function delete(OrderRequest $request, Order $order )
+    {
+        $this->user->can('delete',$order); 
+        $order->is_delete = 1;
+       // $order->seller_id = $this->user()->seller->id;
+        $order->save();
+        return $this->response->item($order, new ThisTransformer());
+    }
+    
 
 }
