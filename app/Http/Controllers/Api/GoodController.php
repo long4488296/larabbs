@@ -23,7 +23,7 @@ class GoodController extends Controller
     public function index(GoodRequest $request,Good $good)
     {
         //获取当前用户的商家和旗下商品goods_ids合集 
-        $type = $request->type ?$request->type:'all';
+        $type = $request->type ?$request->type:'index';
         $column =  $request->column ?$request->column:'goods_name';
         $value = $request->value ? $request->value:false;
         
@@ -37,8 +37,13 @@ class GoodController extends Controller
             ->like($column,$value)
             ->WithOrder($request->order)
             ->paginate(10);
+            $waitcheck = $good->Curuser($this->user())->Waitcheck()
+            ->like($column,$value)
+            ->WithOrder($request->order)
+            ->paginate(10);
             return $this->response->array([
             'sele'=>$onsales,
+            'waitcheck'=>$waitcheck,
             'unsale'=>$unsales
             ])->setStatusCode(200);
         }else if($type=='sele'){
@@ -50,6 +55,14 @@ class GoodController extends Controller
         }else if($type=='unsele'){
             
             $unsales  = $good->Curuser($this->user())->Unsale()
+            ->like($column,$value)
+            ->WithOrder($request->order)
+            ->paginate(10);
+            
+            return $this->response->paginator($unsales, new GoodTransformer(),['key' => 'data']);
+        }else if($type=='waitcheck'){
+            
+            $unsales  = $good->Curuser($this->user())->Waitcheck()
             ->like($column,$value)
             ->WithOrder($request->order)
             ->paginate(10);
@@ -89,6 +102,7 @@ class GoodController extends Controller
     {
         $good->fill($request->all());
         $good->seller_id = $this->user()->seller->id;
+        $good->check_status = 0;
         $good->save();
         // return $this->response->array([
         //   'data'=>$this->response
@@ -106,6 +120,7 @@ class GoodController extends Controller
         // $this->user()->givePermissionTo('manage_contents');
         $data = $request->all();
         $data['seller_id'] = $this->user()->seller->id;
+        $data['check_status'] = 0;
         $good->update($data);
         return $this->response->item($good, new GoodTransformer());
     }

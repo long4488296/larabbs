@@ -4,11 +4,9 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Good;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class GoodPolicy
+class GoodPolicy extends Policy
 {
-    use HandlesAuthorization;
     
     /**
      * Determine whether the user can view any goods.

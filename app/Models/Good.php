@@ -17,7 +17,7 @@ class Good extends Model
      *
      * @var string
      */
-    protected $connection = 'shopsql';
+    //protected $connection = 'shopsql';
     
     public function category()
     {
@@ -29,10 +29,8 @@ class Good extends Model
     }
     public function scopeCuruser($query,User $user){
         // 通过用户获取商家下所有上架商品
-        $this_user_goods_ids = $user->seller->goods
-        ->keyBy('goods_id')
-        ->keys();   
-        return $query->whereIn('goods_id', $this_user_goods_ids);
+        $seller_id = $user->seller->id;   
+        return $query->where('seller_id', $seller_id);
     }
     public function scopeOnsale($query)
     {
@@ -42,9 +40,15 @@ class Good extends Model
     }
     public function scopeUnsale($query)
     {
-        // 通过用户获取商家下所有商品
+        // 通过用户获取商家下 下架商品
         $matchThese = ['is_on_sale' => 0, 'is_alone_sale' => 1, 'is_delete'=> 0,'check_status'=>1];             
         return $query->where($matchThese);
+    }
+    public function scopeWaitcheck($query)
+    {
+        // 通过用户获取商家下 未审核通过的商品
+        $matchThese = ['is_alone_sale' => 1, 'is_delete'=> 0];             
+        return $query->where($matchThese)->where('check_status','<>',1);
     }
     public function scopeWithOrder($query, $order)
     {
