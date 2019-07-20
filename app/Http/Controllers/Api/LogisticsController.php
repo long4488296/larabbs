@@ -15,7 +15,7 @@ class LogisticsController extends Controller
 {
   
 
-    //首页聚合信息
+    //物流信息
     public function me(Request $request)
     {
         //return $this->response->item( , new UserTransformer());
