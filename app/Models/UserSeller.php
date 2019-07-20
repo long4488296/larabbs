@@ -19,7 +19,7 @@ class UserSeller extends Model
      *
      * @var string
      */
-    protected $connection = 'shopsql';
+    // protected $connection = 'shopsql';
     public function goods()
     {
         return $this->hasMany('App\Models\Good', 'seller_id');

@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
      *
      * @var string
      */
-    protected $connection = 'shopsql';
+    // protected $connection = 'shopsql';
     protected $table = 'users';
     protected $primaryKey = 'user_id';
     public $timestamps = false;
