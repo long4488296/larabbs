@@ -77,9 +77,11 @@ class UsersController extends Controller
         
         $promoters = DB::connection('shopsql')->table('promoters')->where('promoters_sn',$request->promoter)->first();
         $promoters_id = 0;
+       
         if($promoters){
             $promoters_id=$promoters->promoters_id;
         }
+       
         $phone = $verifyData['phone'];
         $user = User::create([
             'user_name' => $phone,
@@ -97,23 +99,37 @@ class UsersController extends Controller
         ]);
         \Cache::forget($request->verification_key);
         //return $this->response->item(User::find($user->user_id), new UserTransformer())->setStatusCode(201);
+        
         $data = [
             'user_id'=>$user->user_id,
             'user_name'=>$user->user_name,
-            'promter_id'=>$user->promoters_id,
-            'skstr'=>md5($user->user_id.$user->user_name.$user->promoters_id)
+            'promter_id'=>$promoters->user_id,
+            'skstr'=>md5($user->user_id.$user->user_name.$promoters->user_id)
         ];
-
         
         
         $api = new APIHelper();
         $res =$api->post($data,'');
         $isreg = json_decode($res);
         return $this->response->array([
+            'userid'=>$user->user_id,
             'phone' => $phone,
             'isreg' => true,
             'bonuses'=>$isreg
         ])->setStatusCode(201);
+    }
+    //注册用户领取奖励
+    public function ergetreward(Request $request)
+    {
+        $data = [
+            'uid'=>$request->uid,
+            // 'skstr'=>md5($user->user_id.$user->user_name.$user->promoters_id)
+        ];
+        $api = new APIHelper();
+        $res =$api->post1($data,'');
+        $isreg = json_decode($res);
+        
+        return $this->response->array($res)->setStatusCode(200);
     }
     //用户信息
     public function me()
@@ -139,7 +155,7 @@ class UsersController extends Controller
     
             try {
                 $result = $easySms->send($phone, [
-                    'content'  =>  "【时空商城】您的验证码为：{$code}，请在5分钟内输入，为保证账号安全请勿转发他人。"
+                    'content'  =>  "【时空先生】您的验证码为：{$code}，请在5分钟内输入，为保证账号安全请勿转发他人。"
                 ]);
             } catch (\Overtrue\EasySms\Exceptions\NoGatewayAvailableException $exception) {
                 $message = $exception->getException('chuanglan')->getMessage();

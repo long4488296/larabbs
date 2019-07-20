@@ -15,7 +15,17 @@ class APIHelper
         $data = $res->getBody()->getContents();
         return $data;
     }
- 
+    public function post1($body,$apiStr)
+    {
+       
+
+        $client = new \GuzzleHttp\Client(['base_uri' => 'https://iosapp.shikongmall.com/skgi/sksinterface.php']);
+        $res = $client->request('POST', $apiStr,
+            ['form_params' =>$body,
+        ]);
+        $data = $res->getBody()->getContents();
+        return $data;
+    }
     public function get($apiStr,$header)
     {
         $client = new \GuzzleHttp\Client(['base_uri' => 'http://192.168.31.XX:xxx/api/']);
