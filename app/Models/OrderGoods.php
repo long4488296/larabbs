@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-class Order extends Model
+class OrderGoods extends Model
 {
     // use SoftDeletes;
     // const DELETED_AT = 'is_deleted';
 
-    protected $table = 'order_info';
-    protected $primaryKey = 'order_id';
+    protected $table = 'order_goods';
+    protected $primaryKey = 'rec_id';
     protected $fillable = ['order_id', 'parent_order_id', 'order_sn', 'user_id', 'order_status', 'shipping_status', 'pay_status', 'consignee', 'country', 'province', 'city', 'district', 'address', 'order_address', 'zipcode', 'tel', 'mobile', 'email', 'best_time', 'sign_building', 'postscript', 'shipping_id', 'shipping_name', 'pay_id', 'pay_name', 'how_oos', 'how_surplus', 'pack_name', 'card_name', 'card_message', 'inv_payee', 'inv_content', 'goods_amount', 'shipping_fee', 'insure_fee', 'pay_fee', 'pack_fee', 'card_fee', 'money_paid', 'surplus', 'integral', 'integral_money', 'bonus', 'voucher', 'order_amount', 'from_ad', 'referer', 'add_time', 'confirm_time', 'pay_time', 'shipping_time', 'pack_id', 'card_id', 'bonus_id', 'voucher_id', 'invoice_no', 'extension_code', 'extension_id', 'to_buyer', 'pay_note', 'agency_id', 'inv_type', 'tax', 'is_separate', 'parent_id', 'discount', 'seller_id', 'is_comment', 'isfoder', 'statr', 'collectgoods_time', 'is_ph', 'is_ph_id'];
-    protected $visible1 = ['order_id','order_sn','user_id', 'order_status', 'shipping_status', 'pay_status'];
-    protected $hidden1 = [ 'order_sn'];
+    protected $visible1 = ['order_id','shipping_name','order_sn','user_id', 'order_status', 'shipping_status', 'pay_status'];
+    protected $hidden = [ 'order_sn'];
     
     public $timestamps = false;
     const CREATED_AT = 'add_time';
@@ -34,7 +34,7 @@ class Order extends Model
     }
     public function good()
     {
-        return $this->hasMany('App\Models\OrderGoods', 'order_id');
+        return $this->hasOne('App\Models\Good', 'seller_id');
     }
     public function children()
     {
@@ -47,7 +47,7 @@ class Order extends Model
     public function scopeCuruser($query,User $user){
         // 通过用户获取商家id
         $seller_id = $user->seller->id;   
-       // return $query;
+        return $query;
         return $query->where('seller_id', $seller_id);
     }
     public function scopeWithOrder($query, $order)
@@ -82,13 +82,13 @@ class Order extends Model
                 return $query;
             case 3:
                 $matchThese = ['order_status' => 1, 'pay_status'=> 2]; 
-                return $query->where($matchThese);
+                $query->where($matchThese);
             case 4:
                 $matchThese = ['order_status' => 5, 'shipping_status' => 1, 'pay_status'=> 2]; 
-                return $query->where($matchThese);
+                $query->where($matchThese);
             case 5:
                 $matchThese = ['order_status' => 5, 'shipping_status' => 2, 'pay_status'=> 2]; 
-                return $query->where($matchThese);
+                $query->where($matchThese);
         }
     }
 }

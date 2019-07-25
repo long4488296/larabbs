@@ -42,7 +42,9 @@ class OrderController extends Controller
                                 'finish'=>$finish->total(),
                             ],
                             'index'=>$index,
-                            // 'index'=>$transform->transform($index),
+                            'unshipped'=>$unshipped,
+                            'shipped'=>$shipped,
+                            'finish'=>$finish,
                             // 'unshipped'=>$transform->transform($unshipped),
                             // 'shipped'=>$transform->transform($shipped),
                             // 'finish'=>$transform->transform($finish),
@@ -53,11 +55,12 @@ class OrderController extends Controller
                     ->like($column,$value)
                     ->WithOrder($request->order)
                     ->paginate(10);
+                    return $this->response->paginator($order, new ThisTransformer(),['key' => 'data']);
         }
        
         
         
-        return $this->response->paginator($order, new ThisTransformer(),['key' => 'data']);
+       
         // return $this->response->array([
         //   'data'=>'1'
         //   ])->setStatusCode(200);
@@ -79,7 +82,13 @@ class OrderController extends Controller
     
     public function store(OrderRequest $request, Order $order )
     {
+       /* 选择一个随机的方案 */
+        //$d1 = mt_srand((double) microtime() * 1000000);
+
+        $d =  date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
         $order->fill($request->all());
+                          //2019072365541
+        $order->order_sn = $d;
         $order->seller_id = $this->user()->seller->id;
         $order->save();
         // return $this->response->array([

@@ -24,6 +24,10 @@ class UserSeller extends Model
     {
         return $this->hasMany('App\Models\Good', 'seller_id');
     }
+    public function orders()
+    {
+        return $this->hasMany('App\Models\Order', 'seller_id');
+    }
     public function user()
     {
         return $this->belongsTo('App\Models\User','user_id');

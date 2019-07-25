@@ -2,18 +2,19 @@
 
 namespace App\Transformers;
 
-use App\Models\Order;
+use App\Models\OrderGoods;
 use League\Fractal\TransformerAbstract;
 
-class OrderTransformer extends TransformerAbstract
+class OrderGoodTransformer extends TransformerAbstract
 {
-    protected $availableIncludes = ['seller','user','good'];
+    protected $availableIncludes = ['seller', 'category','user'];
     
-    public function transform(Order $order)
+    public function transform(OrderGoods $good)
     {   
-        $a = $order->toArray();
-        //$a['shipping_name'] = $order->shipping_name;
-        //$a['user'] = $order->order_status.$order->shipping_status.$order->pay_status;
+        $a = $good->toArray();
+        // $a['salesvolume'] = 100000;
+        //$a['goods_name'] = $good->goods_name;
+        // $a['user'] = $good->user;
         //$a['category'] = $good->category;
         return $a;
         // return [
@@ -32,28 +33,26 @@ class OrderTransformer extends TransformerAbstract
         // ];
     }
 
-    public function includeSeller(Order $order)
+    public function includeSeller(Good $good)
     {
-        if($order->seller){
-            return $this->item($order->seller, new SellerTransformer());
+        if($good->seller){
+            return $this->item($good->seller, new SellerTransformer());
         }else{
             return null;
         }
         
     }
-    public function includeGood(Order $order)
+    public function includeUser(Good $good)
     {
-        return $this->collection($order->good, new OrderGoodTransformer());
-       
-        
-        
-    }
-    public function includeUser(Order $order)
-    {
-        if($order->user){
-        return $this->item($order->user, new UserTransformer());
+        if($good->seller){
+            return $this->item($good->seller->user, new UserTransformer());
         }else{
             return null;
         }
+        
+    }
+    public function includeCategory(Good $good)
+    {
+        return $this->item($good->category, new CategoryTransformer());
     }
 }

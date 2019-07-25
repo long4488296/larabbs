@@ -11,8 +11,9 @@ class GoodTransformer extends TransformerAbstract
     
     public function transform(Good $good)
     {   
-        //$a = $good->toArray();
-        $a['goods_name'] = $good->goods_name;
+        $a = $good->toArray();
+        $a['salesvolume'] = 100000;
+        //$a['goods_name'] = $good->goods_name;
         // $a['user'] = $good->user;
         //$a['category'] = $good->category;
         return $a;
