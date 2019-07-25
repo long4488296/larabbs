@@ -34,7 +34,11 @@ class User extends Authenticatable implements MustVerifyEmailContract, JWTSubjec
     public $timestamps = false;
     public function seller()
     {
-        return $this->hasOne(UserSeller::class, 'user_id');
+        return $this->hasOne('App\Models\UserSeller', 'user_id');
+    }
+    public function message()
+    {
+        return $this->hasMany('App\Models\Message', 'user_id');
     }
     public function findForPassport($username)
     {

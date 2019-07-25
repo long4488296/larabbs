@@ -34,7 +34,7 @@ class OrderGoods extends Model
     }
     public function good()
     {
-        return $this->hasOne('App\Models\Good', 'seller_id');
+        return $this->hasOne('App\Models\Good', 'goods_id');
     }
     public function children()
     {
@@ -44,11 +44,15 @@ class OrderGoods extends Model
     {
         return $this->belongsTo('App\Models\Order', 'parent_id');
     }
+    public function ordergoods_amount()
+    {
+        return $this->good->shop_price;
+    }
     public function scopeCuruser($query,User $user){
         // 通过用户获取商家id
-        $seller_id = $user->seller->id;   
-        return $query;
-        return $query->where('seller_id', $seller_id);
+        return $query->with('good');
+        $order_ids = $user->seller->orders->keyBy('order_id')->keys();   
+        return $query->whereIn('order_id', $order_ids);
     }
     public function scopeWithOrder($query, $order)
     {

@@ -47,8 +47,22 @@ class Order extends Model
     public function scopeCuruser($query,User $user){
         // 通过用户获取商家id
         $seller_id = $user->seller->id;   
-       // return $query;
         return $query->where('seller_id', $seller_id);
+    }
+    public function scopeThisMonth($query){
+        $beginThismonth=mktime(0,0,0,date('m'),1,date('Y'));  
+        $endThismonth=mktime(23,59,59,date('m'),date('t'),date('Y'));  
+        return $query->whereBetween('add_time',[$beginThismonth, $endThismonth]);
+    }
+    public function scopeThisDay($query){
+        $beginToday=mktime(0,0,0,date('m'),date('d'),date('Y'));  
+        $endToday=mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;  
+        return $query->whereBetween('add_time',[$beginToday,  $endToday]);
+    }
+    public function scopeThis7Day($query){
+        $beginThisweek = mktime(0,0,0,date('m'),date('d')-date('w')+1,date('y'));  
+        $endThisweek=time();  
+        return $query->whereBetween('add_time',[$beginThisweek, $endThisweek]);
     }
     public function scopeWithOrder($query, $order)
     {
@@ -64,7 +78,7 @@ class Order extends Model
                 break;
         }
         // 预加载防止 N+1 问题
-        return $query;
+        return $query->with('good');
         return $query->with('seller', 'category');
         //return $query->with('category');
     }
