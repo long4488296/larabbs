@@ -14,6 +14,7 @@ class OrderController extends Controller
     public function index(OrderRequest $request,Order $order )
     {
         //获取当前用户的商家和旗下商品goods_ids合集 
+        $this->user()->seller->id  = 0;
         $type = $request->type ?$request->type:'all';
         $column =  $request->column ?$request->column:'shipping_name';
         $value = $request->value ? $request->value:false;
@@ -36,12 +37,12 @@ class OrderController extends Controller
             $finish    = $order->Curuser($this->user())->OrderType(5)->like($column,$value)->WithOrder($request->order)->paginate(10);
             return $this->response->array([
                             'alltotal'=>[
-                                'index'=>$index->total(),
+                                'all'=>$index->total(),
                                 'unshipped'=>$unshipped->total(),
                                 'shipped'=>$shipped->total(),
                                 'finish'=>$finish->total(),
                             ],
-                            'index'=>$index,
+                            'all'=>$index,
                             'unshipped'=>$unshipped,
                             'shipped'=>$shipped,
                             'finish'=>$finish,
