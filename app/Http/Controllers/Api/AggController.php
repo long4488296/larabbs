@@ -9,6 +9,7 @@ use App\Models\OrderGoods;
 use App\Models\Good;
 use App\Models\Order;
 use App\Models\Message;
+use App\Models\Shipping;
 use App\Transformers\CategoryTransformer;
 class AggController extends Controller
 {
@@ -44,6 +45,8 @@ class AggController extends Controller
         ];
         //分类信息
         $category = Category::TopLevel()->get();
+        //快递信息
+        $shipping = Shipping::get();
         //拼装数据
         $data = [
             "price"=>$price,//当日成交金额汇总
@@ -54,6 +57,7 @@ class AggController extends Controller
             "daifa"=> $daifa,//需要发货的订单
             "shop"=>$shop,
             "notice"=>$notice,
+            "shipping"=>$shipping,
             "category"=>$category,
         ];
          // return $this->response->array([
