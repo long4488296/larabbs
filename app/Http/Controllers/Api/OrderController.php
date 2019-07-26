@@ -106,16 +106,24 @@ class OrderController extends Controller
         //$this->authorize('update', Post::class);
         //$this->authorize('update', $order);
         // $this->user()->givePermissionTo('manage_contents');
-        $data = $request->all();
-        $data['seller_id'] = $this->user()->seller->id;
-        $order->update($data);
+        // $data = $request->all();
+        // $data['seller_id'] = $this->user()->seller->id;
+        // $data['shipping_time']=time();
+
+        // $order->update($data);
         return $this->response->item($order, new ThisTransformer());
     }
-    public function sele(OrderRequest $request, Order $order )
+    public function shipping(OrderRequest $request, Order $order )
     {
         $this->user->can('update',$order); 
-        $order->is_on_sale = 1;
-        $order->save();
+        //$data['seller_id'] = $this->user()->seller->id;
+        $data['shipping_id']=$request->shipping_id;
+        $data['shipping_name']=$request->shipping_name;
+        $data['shipping_time']=time();
+        $data['order_status']=5;
+        $data['shipping_status']=1;
+        $data['invoice_no']=$request->invoice_no;
+        $order->update($data);
         return $this->response->item($order, new ThisTransformer());
     }
     public function unsele(OrderRequest $request, Order $order )

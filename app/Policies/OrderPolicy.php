@@ -49,11 +49,11 @@ class OrderPolicy extends Policy
      * @param  \App\Good  $good
      * @return mixed
      */
-    public function update(User $user, Good $good)
+    public function update(User $user, Order $order)
     {
        
         //
-       return $user->seller->id==$good->seller->id;
+       return $user->seller->id==$order->seller_id;
     }
 
     /**

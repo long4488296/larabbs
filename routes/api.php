@@ -92,16 +92,14 @@ $skbmapi->version('v1', [
             //商品单个详情
             $api->get('user/order/{order}', 'OrderController@show')
                 ->name('api.user.order.show');
-            //商品单个创建
+            //订单单个创建
             $api->post('user/order', 'OrderController@store')
                 ->name('api.user.order.store');
-            //商品单个修改单
+            //订单单个修改单
             $api->patch('user/order/{order}', 'OrderController@update')
                 ->name('api.user.order.edit');
-            $api->patch('user/order/{order}/sele', 'OrderController@sele')
-                ->name('api.user.order.sele');
-            $api->patch('user/order/{order}/unsele', 'OrderController@unsele')
-                ->name('api.user.order.unsele');
+            $api->patch('user/order/{order}/shipping', 'OrderController@shipping')
+                ->name('api.user.order.shipping');
             $api->delete('user/order/{order}', 'OrderController@delete')
                 ->name('api.user.order.delete');
             //订单中商品的物流信息
@@ -128,7 +126,15 @@ $skbmapi->version('v1', [
                 ->name('api.user.good.delete');
             //店铺
             $api->get('user/shop', 'ShopController@me')
-              ->name('api.user.shop');
+                ->name('api.user.shop');
+            $api->post('user/shop/getcaptcha', 'ShopController@getCaptcha')//获取验证码
+                ->name('api.user.shop.getcaptcha');
+            $api->post('user/shop/entcert', 'ShopController@EnterpriseCertification')//企业认证
+                ->name('api.user.shop.entcert');
+            $api->post('user/shop/percert', 'ShopController@PersonalCertification')//个人认证
+                ->name('api.user.shop.percert');
+            $api->post('user/shop/location', 'ShopController@ShopLocation')//店铺位置
+                ->name('api.user.shop.location');
             //库存
             $api->get('user/stock', 'StockController@me')
               ->name('api.user.stock');
